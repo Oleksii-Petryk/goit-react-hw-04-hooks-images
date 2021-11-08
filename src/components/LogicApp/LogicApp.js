@@ -26,12 +26,13 @@ export default function LogicApp({ queryImages }) {
       return;
     }
     setStatus('pending');
+    setImages([]);
+    setPage(1);
 
     API(queryImages)
       .then(requestedImages => {
         if (requestedImages.hits.length !== 0) {
           setImages(requestedImages.hits);
-
           setStatus('resolved');
           setPage(prevPage => prevPage + 1);
         } else {
