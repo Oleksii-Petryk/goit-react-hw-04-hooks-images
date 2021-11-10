@@ -16,17 +16,11 @@ export default function LogicApp({ queryImages }) {
   const [alt, setAlt] = useState('');
   const [page, setPage] = useState(1);
 
-  window.scrollTo({
-    top: document.documentElement.scrollHeight,
-    behavior: 'smooth',
-  });
-
   useEffect(() => {
     if (!queryImages) {
       return;
     }
     setStatus('pending');
-    setImages([]);
     setPage(1);
 
     API(queryImages)
@@ -34,6 +28,10 @@ export default function LogicApp({ queryImages }) {
         if (requestedImages.hits.length !== 0) {
           setImages(requestedImages.hits);
           setStatus('resolved');
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
           setPage(prevPage => prevPage + 1);
         } else {
           Promise.reject(
@@ -43,7 +41,6 @@ export default function LogicApp({ queryImages }) {
           );
         }
       })
-
       .catch(error => {
         setError(error);
         setStatus('rejected');
@@ -51,13 +48,16 @@ export default function LogicApp({ queryImages }) {
   }, [queryImages]);
 
   const onLoadMore = () => {
-    setStatus('pending');
-
     API(queryImages, page)
       .then(requestedImages => {
         setImages(prevImages => [...prevImages, ...requestedImages.hits]);
+
         setPage(page + 1);
         setStatus('resolved');
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
       })
       .catch(error => {
         setError(error);
